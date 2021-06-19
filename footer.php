@@ -7,6 +7,7 @@
         </div>
         </div>
     </footer>
-<!-- <script src="../all.js"></script> -->
+<script src="../login/login.js"></script>
+<script src="../login/logout.js"></script>
 </body>
 </html>

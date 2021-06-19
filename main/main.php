@@ -1,4 +1,10 @@
 <?php include("../header.php") ?> 
+<?php 
+    if(!isset($_SESSION["CNO"])){ //세션값을 확인하여 로그인 했을 경우에만 이용 가능하도록함
+        echo '<script>alert("로그인 후 이용 가능합니다.");</script>';
+        header("Refresh:0; url=../login/login.php");
+    }
+?> 
 <div class="section_div">
 <section class="wrap">
         <aside id="menu" class="left">
