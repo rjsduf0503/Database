@@ -39,12 +39,13 @@ class OracleDB{
         // echo($tns." ".$user." ".$db_pwd);
         try{
             $this->dbh = new PDO("oci:dbname=".$tns.";charset=UTF8", $user, $db_pwd);
-            //echo "참";
+            return $this->dbh;
         }catch(PDOException $e){
             echo ($e->getMessage());
         }
        
     }
+
    
     public function select($query){
        

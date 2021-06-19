@@ -10,18 +10,15 @@
         <aside id="menu" class="left">
             <section class="wrap">
                 <h3>Category</h3>
-                <!-- <ul>
-                    <li>Search</li>
-                    <li>My Page</li>
-                </ul> -->
-                <!-- <div> -->
                     <ul>
                         <li><a class="category_link" href="../book/search.php" >Search</a></li>
                         <li><a class="category_link" href="../myPage/myPage.php" >My Page</a></li>
                     </ul>
-                <!-- </div> -->
             </section>
         </aside>
+        <article>
+            main
+        </article>
 </section>
 </div>
 

@@ -1,8 +1,8 @@
 <?php 
     session_start(); 
-    // include 'OracleDB.php';
-    // $orcl = new OracleDB('127.0.0.1', 'TP201702043', 'Chess00700');
-    // $orcl->connect();
+    include 'OracleDB.php';
+    $orcl = new OracleDB('127.0.0.1', 'TP201702043', 'Chess00700');
+    $orcl->connect();
 ?>
 
 <!DOCTYPE html>
@@ -12,10 +12,11 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
         
-    <title>Home</title>
+    <title>Library</title>
     <link rel="stylesheet" href="../base.css"> 
     <!-- <link rel="stylesheet" href="../all.css"> -->
     <!-- <link rel="stylesheet" href="../main/main.css"> -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous">
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>

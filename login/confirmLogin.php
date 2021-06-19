@@ -7,7 +7,7 @@
   }
   include '../OracleDB.php';
   $orcl = new OracleDB('127.0.0.1', 'TP201702043', 'Chess00700');
-  $orcl->connect();
+//   $orcl->connect();
 
   $method = $_SERVER['REQUEST_METHOD']; //method는 POST로 받아왔으므로 POST
   $data = $_REQUEST['data']; //data 값을 요청하여 얻음
