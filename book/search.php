@@ -5,6 +5,8 @@
         header("Refresh:0; url=../login/login.php");
     }
     $searchWord = $_GET['searchWord'] ?? "";
+    if(isset($_GET["page"])) $page = (int)$_GET["page"];
+    else $page = 1;
 ?> 
 <div class="section_div">
 <section class="wrap">
@@ -52,20 +54,36 @@
                 </thead>
                 <tbody>
             <?php 
-                $ebook_query = "SELECT E.*, ROWNUM FROM EBOOK E WHERE LOWER(E.TITLE) LIKE '%' || :searchWord || '%'";
+                $author;
                 $conn = $orcl->connect();
-                
-                $stmt = $conn -> prepare($ebook_query);
-                $stmt -> execute(array($searchWord));
 
+                // 페이지 당 10개의 도서 씩 출력
                 $res = $conn -> query("SELECT COUNT(*) FROM EBOOK WHERE LOWER(TITLE) LIKE '%' || '$searchWord' || '%'");
                 $count = $res -> fetchColumn(); //첫 행 가져오기
+                $list = 10; //한 페이지에 보여줄 도서 권수
+                $block_cnt = 10; //블록 당 보여줄 페이지의 개수
+                // $block_num = ceil($page / $block_cnt);
+                $block_start = (($page - 1) * $block_cnt) + 1; //한 페이지의 시작 번호
+                $block_end = $block_start + $block_cnt - 1;
 
-                $author;
+                $total_page = ceil($count / $list);
+                if($block_end > $count%$block_cnt && $page == $total_page) $block_end = $count;
+                // $total_block = ceil($total_page / $block_cnt);
+                // $page_start = ($page - 1) * $list;
+                $stmt;
+                $stmt = $conn -> query("SELECT *
+                                            FROM(
+                                                SELECT E.*, ROWNUM AS ROW_NUM 
+                                                FROM EBOOK E
+                                                WHERE LOWER(TITLE) LIKE '%' || '$searchWord' || '%'
+                                                ORDER BY ROW_NUM
+                                                )
+                                        WHERE ROW_NUM >= $block_start AND ROW_NUM <= $block_end");
+                $stmt -> execute();
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             ?>
                     <tr>
-                        <td><?=$row["ROWNUM"]?></td>
+                        <td><?=$row["ROW_NUM"]?></td>
                         <td><?=$row["ISBN"] ?></td>
                         <td><a href="bookView.php?isbn=<?=$row["ISBN"]?>"><?=$row["TITLE"] ?></a></td>
                         <td>
@@ -94,6 +112,64 @@
                     <?php } ?>  
                     </tbody>
             </table>      
+
+            <div id="paging" class="center">
+                <?php 
+                    // echo $page;
+                    if($page <= 1) {}
+                    else {
+                        if ($searchWord == "") {
+                            echo "<a href='search.php?page=1'>처음</a>";
+                        }
+                        else{
+                            echo "<a href='search.php?searchWord=$searchWord?page=1'>처음</a>";
+                        }
+                    }
+                    if($page <= 1) {}
+                    else {
+                        $previous = (int)$page - 1;
+                        if ($searchWord == "") {
+                            echo "<a href='search.php?page=$previous'>이전</a>";
+                        }
+                        else{
+                            echo "<a href='search.php?searchWord=$searchWord?page=$previous'>이전</a>";
+                        }
+                    }
+                    for ($idx=1; $idx <= $total_page ; $idx++) { 
+                        if($page == $idx){
+                            echo "<b> $idx </b>";
+                        }
+                        else {
+                            if ($searchWord == "") {
+                                echo "<a href='search.php?page=$idx'> $idx </a>";
+                            }
+                            else{
+                                echo "<a href='search.php?searchWord=$searchWord?page=$idx'> $idx </a>";
+                            }
+                        }
+                    }
+                    if($page >= $total_page) {}
+                    else{
+                        $next = (int)$page + 1;
+                        if ($searchWord == "") {
+                            echo "<a href='search.php?page=$next'>다음</a>";
+                        }
+                        else{
+                            echo "<a href='search.php?searchWord=$searchWord?page=$next'>다음</a>";
+                        }
+                    }
+                    if($page >= $total_page) {}
+                    else{
+                        if ($searchWord == "") {
+                            echo "<a href='search.php?page=$total_page'>끝</a>";
+                        }
+                        else{
+                            echo "<a href='search.php?searchWord=$searchWord?page=$total_page'>끝</a>";
+                        }
+                    }
+                ?>
+            </div>
+
         </article>
 </section>
 </div>
