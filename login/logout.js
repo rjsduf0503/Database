@@ -15,6 +15,6 @@ $(document).ready(function() { //로그아웃
     });
 });
 
-function goto_login() { //main으로 돌아감
+function goto_login() { //login page로 돌아감
     location.replace("../login/login.php");
 }

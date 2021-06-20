@@ -18,7 +18,7 @@
             </section>
         </aside>
         <article>
-            <form class="row">
+            <!-- <form class="row">
                 <div class="col-10">
                     <label for="searchWord" class="visually-hidden">Search</label>
                     <input type="text" class="form-control" name="searchWord" placeholder="Type your search criteria" value="<?= $searchWord ?>">
@@ -26,9 +26,19 @@
                 <div class="col-auto text-end">
                     <button type="submit" class="btn btn-primary mb-3">Search</button>
                 </div>
+            </form> -->
+            <form>
+                <div class="margin_div">
+                    <label for="searchWord">Search</label>
+                    <input type="text" id="searchWord" class="center" name="searchWord" placeholder="도서명을 검색하세요." value="<?= $searchWord ?>">
+                </div>
+                <div class="margin_div">
+                    <button type="submit" class="search_btn_img"></button>
+                </div>
             </form>
-            <h2 class="center">Book List</h2>
-            <table class="center">
+
+            <h1 class="center">Book List</h1>
+            <table class="center bookList">
                 <thead>
                     <tr>
                         <th>번호</th>
@@ -42,30 +52,31 @@
                 </thead>
                 <tbody>
             <?php 
-                $ebook_query = "SELECT * FROM EBOOK WHERE LOWER(TITLE) LIKE '%' || :searchWord || '%'";
-                // $bookList = $orcl->select($ebook_query);
+                $ebook_query = "SELECT E.*, ROWNUM FROM EBOOK E WHERE LOWER(E.TITLE) LIKE '%' || :searchWord || '%'";
                 $conn = $orcl->connect();
+                
                 $stmt = $conn -> prepare($ebook_query);
                 $stmt -> execute(array($searchWord));
-            
-                // $author_query = "SELECT * FROM AUTHORS";
-                // $authorList = $orcl->select($author_query);
+
+                $res = $conn -> query("SELECT COUNT(*) FROM EBOOK WHERE LOWER(TITLE) LIKE '%' || '$searchWord' || '%'");
+                $count = $res -> fetchColumn(); //첫 행 가져오기
+
                 $author;
-                $num = 1;
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             ?>
                     <tr>
-                        <td><?=$num++?></td>
+                        <td><?=$row["ROWNUM"]?></td>
                         <td><?=$row["ISBN"] ?></td>
                         <td><a href="bookView.php?isbn=<?=$row["ISBN"]?>"><?=$row["TITLE"] ?></a></td>
                         <td>
                             <?php 
-                                $query = "SELECT * FROM AUTHORS";
+                                $query = "SELECT * FROM AUTHORS WHERE {$row['ISBN']} = ISBN";
                                 $author = $orcl->select($query);
-                                foreach ($author as $value) {
-                                    if ($value["ISBN"] == $row["ISBN"]) {
-                                        echo $value["AUTHOR"]."/";
+                                foreach ($author as $idx => $value) {
+                                    if ($idx === array_key_last($author)) {
+                                        echo $value["AUTHOR"];
                                     }
+                                    else echo $value["AUTHOR"]."/";
                                 }
                             ?>
                         </td>
@@ -83,7 +94,6 @@
                     <?php } ?>  
                     </tbody>
             </table>      
-            search_book
         </article>
 </section>
 </div>

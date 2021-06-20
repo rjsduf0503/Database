@@ -1,0 +1,53 @@
+table.bookList{
+    width: 80%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+table.bookList th, table.bookList td{
+    border: 1px solid black;
+    padding: 10px;
+}
+
+table.bookList th{
+    border-top: 4px solid rgb(97, 97, 97);
+    font-weight: bold;
+    background-color: rgb(199, 196, 196);
+}
+
+
+
+label[for="searchWord"]{
+    /* font-size: 100px; */
+    display: none;
+    /* visibility:hidden; */
+}
+
+.margin_div{
+    margin: 10px 10px 10px 0;
+    /* margin: 0px auto; */
+}
+
+#searchWord{
+    /* text-align: center; */
+    width: 70%;
+    float: left;
+    /* margin: 10px 5px 10px 0; */
+    margin-right: 10px;
+    padding: 5px 0 5px 0;
+    background-color: rgb(255, 255, 255);
+    border: 5px solid rgb(58, 206, 13);
+    font-size: 15px;
+}
+
+article h1{
+    margin-top: 20px;
+}
+
+button.search_btn_img{
+    margin-top: 5px;
+    background: url("button_search.png") no-repeat;
+    border: none;
+    width: 32px;
+    height: 32px;
+    cursor: pointer;
+}

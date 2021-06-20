@@ -5,8 +5,8 @@ class OracleDB{
     private $user; //유저 이름
     private $pwd; //유저 비밀번호
     private $tns; //tns name
-    private $dbh;
-   
+    private $dbh = null;
+
     public function __construct($host, $user, $pwd){
        
         /*
@@ -39,6 +39,8 @@ class OracleDB{
         // echo($tns." ".$user." ".$db_pwd);
         try{
             $this->dbh = new PDO("oci:dbname=".$tns.";charset=UTF8", $user, $db_pwd);
+            $this->dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false); 
+            $this->dbh->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
             return $this->dbh;
         }catch(PDOException $e){
             echo ($e->getMessage());
@@ -46,7 +48,24 @@ class OracleDB{
        
     }
 
-   
+    public function query(){
+        return $this->dbh->query();
+    }
+ 
+    // function query($query, $values=null)
+    // {
+    //     if($query == "")
+    //         return false;
+           
+    //     if($sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL)))
+    //     {
+    //         $res = ($values) ? $sth->execute($values) : $sth->execute();
+    //         if(!$res)
+    //             return false;
+    //     }           
+    //     return $sth;
+    // }
+
     public function select($query){
        
         $stmt = NULL;
@@ -85,6 +104,18 @@ class OracleDB{
 
         
     }
+
+    // public function __call($name, array $arguments) {
+
+    //     if(method_exists($this->dbh, $name)){
+    //         try{
+    //             return call_user_func_array(array(&$this->dbh, $name), $arguments);
+    //         }
+    //         catch(Exception $e){
+    //             throw new Exception('Database Error: "'.$name.'" does not exists');
+    //         }
+    //      }
+    //  }
 }
 
 ?>

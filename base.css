@@ -1,6 +1,6 @@
 * {
-    font-size: 15px;
-    font-weight: normal;
+    /* font-size: 15px; */
+    /* font-weight: normal; */
     font-family: 'Noto Sans KR', sans-serif;
     box-sizing: border-box;
     margin: 0;
@@ -139,6 +139,12 @@ footer {
     border-bottom: 1px solid black;
 }
 
+.show{
+    display: inline-block;
+}
+.hide{
+    display: none;
+}
 
 @media only screen and (max-width: 501px){
     .head #menu{
