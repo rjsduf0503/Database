@@ -7,6 +7,7 @@ class OracleDB{
     private $tns; //tns name
     private $dbh = null;
 
+    //생성자
     public function __construct($host, $user, $pwd){
        
         /*
@@ -26,17 +27,18 @@ class OracleDB{
         $this->dbh = NULL;
     }
    
+    //소멸자
     public function __destruct(){
         unset($this->dbh);
     }
    
+    //oracle과 연결
     public function connect(){
        
         $tns = $this->tns;
         $user = $this->user;
         $db_pwd = $this->pwd;
        
-        // echo($tns." ".$user." ".$db_pwd);
         try{
             $this->dbh = new PDO("oci:dbname=".$tns.";charset=UTF8", $user, $db_pwd);
             $this->dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES, false); 
@@ -48,24 +50,13 @@ class OracleDB{
        
     }
 
+    //query
     public function query(){
         return $this->dbh->query();
     }
  
-    // function query($query, $values=null)
-    // {
-    //     if($query == "")
-    //         return false;
-           
-    //     if($sth = $this->prepare($query, array(PDO::ATTR_CURSOR => PDO::CURSOR_SCROLL)))
-    //     {
-    //         $res = ($values) ? $sth->execute($values) : $sth->execute();
-    //         if(!$res)
-    //             return false;
-    //     }           
-    //     return $sth;
-    // }
 
+    //select문
     public function select($query){
        
         $stmt = NULL;
@@ -83,6 +74,7 @@ class OracleDB{
        
     }
    
+    //insert문
     public function insert($subject){
         $stmt = NULL;
         $dbh = $this->dbh;
@@ -95,27 +87,10 @@ class OracleDB{
            
             return true;
         }
-       
+        
         return false;
-       
-    }
-   
-    public function modify(){
-
         
     }
-
-    // public function __call($name, array $arguments) {
-
-    //     if(method_exists($this->dbh, $name)){
-    //         try{
-    //             return call_user_func_array(array(&$this->dbh, $name), $arguments);
-    //         }
-    //         catch(Exception $e){
-    //             throw new Exception('Database Error: "'.$name.'" does not exists');
-    //         }
-    //      }
-    //  }
 }
 
 ?>

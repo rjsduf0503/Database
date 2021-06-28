@@ -1,41 +1,194 @@
-<?php include("../header.php") ?> 
+<link rel="stylesheet" href="../book/search.css">
+<?php include("../aside.php") ?> 
 <?php 
     if(!isset($_SESSION["CNO"])){ //세션값을 확인하여 로그인 했을 경우에만 이용 가능하도록함
         echo '<script>alert("로그인 후 이용 가능합니다.");</script>';
         header("Refresh:0; url=../login/login.php");
     }
-    $searchWord = $_GET['searchWord'] ?? "";
-    if(isset($_GET["page"])) $page = (int)$_GET["page"];
-    else $page = 1;
-?> 
-<div class="section_div">
-<section class="wrap">
-        <aside id="menu" class="left">
-            <section class="wrap">
-                <h3>Category</h3>
-                    <ul>
-                        <li><a class="category_link" href="../book/search.php" >Search</a></li>
-                        <li><a class="category_link" href="../myPage/myPage.php" >My Page</a></li>
-                    </ul>
-            </section>
-        </aside>
+    $conn = $orcl->connect();
+
+    //검색 조건 값을 GET으로 가져옴, 입력 값이 없다면 빈 값으로 설정
+    $bookName = $_GET["bookName"] ?? "";
+    $bookNameOption = $_GET["bookNameOption"] ?? "";
+    $author = $_GET["author"] ?? "";
+    $authorOption = $_GET["authorOption"] ?? "";
+    $publisher = $_GET["publisher"] ?? "";
+    $publisherOption = $_GET["publisherOption"] ?? "";
+    $bookYearFrom = $_GET["bookYearFrom"] ?? "";
+    $bookYearTo = $_GET["bookYearTo"] ?? "";
+    $bookYearOption = $_GET["bookYearOption"] ?? "";
+
+    //기본 쿼리
+    $sql = "SELECT * FROM (SELECT E.*, A.AUTHOR, ROWNUM AS ROW_NUM FROM EBOOK E, (SELECT ISBN, LISTAGG(AUTHOR, ',') AS AUTHOR FROM AUTHORS GROUP BY ISBN) A WHERE E.ISBN = A.ISBN) ";
+    $count = 0; //첫 검색조건 설정을 위한 변수
+    //0일 때만 WHERE절로 시작, 나머지는 연산자로 시작
+
+    //도서명 검색조건
+    if($bookName !== ""){
+        if($count == 0){
+            if($bookNameOption === "NOT"){ //NOT
+                $sql .= "WHERE TITLE NOT LIKE "."'%".$bookName."%' ";
+            }
+            else{ //AND or OR
+                $sql .= "WHERE TITLE LIKE "."'%".$bookName."%' ";
+            }
+        }
+        else{
+            if($bookNameOption === "NOT"){ //NOT
+                $sql .= "AND TITLE NOT LIKE "."'%".$bookName."%' ";
+            }
+            else{ //AND or OR
+                $sql .= $bookNameOption." TITLE LIKE "."'%".$bookName."%' ";
+            }
+        }
+        $count++;
+    }
+
+    //저자 검색조건
+    if($author !== ""){
+        if($count == 0){
+            if($authorOption === "NOT"){ //NOT
+                $sql .= "WHERE AUTHOR NOT LIKE "."'%".$author."%' ";
+            }
+            else{ //AND or OR
+                $sql .= "WHERE AUTHOR LIKE "."'%".$author."%' ";
+            }
+        }
+        else{
+            if($authorOption === "NOT"){ //NOT
+                $sql .= "AND AUTHOR NOT LIKE "."'%".$author."%' ";
+            }
+            else{ //AND or OR
+                $sql .= $authorOption." AUTHOR LIKE "."'%".$author."%' ";
+            }
+        }
+        $count++;
+    }
+
+    
+    //출판사 검색조건
+    if($publisher !== ""){
+        if($count == 0){
+            if($publisherOption === "NOT"){ //NOT
+                $sql .= "WHERE PUBLISHER NOT LIKE "."'%".$publisher."%' ";
+            }
+            else{ //AND or OR
+                $sql .= "WHERE PUBLISHER LIKE "."'%".$publisher."%' ";
+            }
+        }
+        else{
+            if($publisherOption === "NOT"){ //NOT
+                $sql .= "AND PUBLISHER NOT LIKE "."'%".$publisher."%' ";
+            }
+            else{ //AND or OR
+                $sql .= $publisherOption." PUBLISHER LIKE "."'%".$publisher."%' ";
+            }
+        }
+        $count++;
+    }
+    
+    //발행년도 검색조건
+    //두 조건: 기본 값은 사이, NOT은 사이 제외
+    //한 조건: 기본 값은 ~~까지, NOT은 ~~이후
+    if($bookYearFrom !== "" && $bookYearTo !== ""){
+        if($count == 0){
+            if($bookYearOption === "NOT"){ //NOT
+                $sql .= "WHERE YEAR NOT BETWEEN TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD') AND TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+            else{ //AND or OR
+                $sql .= "WHERE YEAR BETWEEN TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD') AND TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+        }
+        else{
+            if($bookYearOption === "NOT"){ //NOT
+                $sql .= "AND YEAR NOT BETWEEN TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD') AND TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+            else{ //AND or OR
+                $sql .= $publisherOption." YEAR BETWEEN TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD') AND TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+        }
+        $count++;
+    }
+    elseif ($bookYearFrom === "" && $bookYearTo !== "") {
+        if($count == 0){ //NOT
+            if($bookYearOption === "NOT"){
+                $sql .= "WHERE YEAR < TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+            else{ //AND or OR
+                $sql .= "WHERE YEAR >= TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+        }
+        else{
+            if($bookYearOption === "NOT"){ //NOT
+                $sql .= "AND YEAR < TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+            else{ //AND or OR
+                $sql .= $publisherOption." YEAR >= TO_DATE("."'".$bookYearTo."'".", 'YYYY-MM-DD')";
+            }
+        }
+        $count++;
+    }
+    elseif ($bookYearFrom !== "" && $bookYearTo === "") {
+        if($count == 0){
+            if($bookYearOption === "NOT"){ //NOT
+                $sql .= "WHERE YEAR < TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD')";
+            }
+            else{ //AND or OR
+                $sql .= "WHERE YEAR >= TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD'";
+            }
+        }
+        else{
+            if($bookYearOption === "NOT"){ //NOT
+                $sql .= "AND YEAR < TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD')";
+            }
+            else{ //AND or OR
+                $sql .= $publisherOption." YEAR >= TO_DATE("."'".$bookYearFrom."'".", 'YYYY-MM-DD'";
+            }
+        }
+        $count++;
+    }
+    ?> 
         <article>
-            <!-- <form class="row">
-                <div class="col-10">
-                    <label for="searchWord" class="visually-hidden">Search</label>
-                    <input type="text" class="form-control" name="searchWord" placeholder="Type your search criteria" value="<?= $searchWord ?>">
-                </div>
-                <div class="col-auto text-end">
-                    <button type="submit" class="btn btn-primary mb-3">Search</button>
-                </div>
-            </form> -->
-            <form>
+            <form method="get" action="search.php">
                 <div class="margin_div">
-                    <label for="searchWord">Search</label>
-                    <input type="text" id="searchWord" class="center" name="searchWord" placeholder="도서명을 검색하세요." value="<?= $searchWord ?>">
-                </div>
-                <div class="margin_div">
-                    <button type="submit" class="search_btn_img"></button>
+                        <div>
+                            <label>도서명</label>
+                            <input type="text" name="bookName" id="bookName">
+                            <select name="bookNameOption">
+                                <option value="AND">AND</option>
+                                <option value="OR">OR</option>
+                                <option value="NOT">NOT</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>저자</label>
+                            <input type="text" name="author">
+                            <select name="authorOption">
+                                <option value="AND">AND</option>
+                                <option value="OR">OR</option>
+                                <option value="NOT">NOT</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>출판사</label>
+                            <input type="text" name="publisher">
+                            <select name="publisherOption">
+                                <option value="AND">AND</option>
+                                <option value="OR">OR</option>
+                                <option value="NOT">NOT</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label>발행년도</label>
+                            <input type="date" name="bookYearFrom">~
+                            <input type="date" name="bookYearTo">
+                            <select name="bookYearOption">
+                                <option value="AND">AND</option>
+                                <option value="OR">OR</option>
+                                <option value="NOT">NOT</option>
+                            </select>
+                        </div>
+                        <button type="submit" class="search_btn_img"></button>
                 </div>
             </form>
 
@@ -54,40 +207,20 @@
                 </thead>
                 <tbody>
             <?php 
-                $author;
-                $conn = $orcl->connect();
-
-                // 페이지 당 10개의 도서 씩 출력
-                $res = $conn -> query("SELECT COUNT(*) FROM EBOOK WHERE LOWER(TITLE) LIKE '%' || '$searchWord' || '%'");
-                $count = $res -> fetchColumn(); //첫 행 가져오기
-                $list = 10; //한 페이지에 보여줄 도서 권수
-                $block_cnt = 10; //블록 당 보여줄 페이지의 개수
-                // $block_num = ceil($page / $block_cnt);
-                $block_start = (($page - 1) * $block_cnt) + 1; //한 페이지의 시작 번호
-                $block_end = $block_start + $block_cnt - 1;
-
-                $total_page = ceil($count / $list);
-                if($block_end > $count%$block_cnt && $page == $total_page) $block_end = $count;
-                // $total_block = ceil($total_page / $block_cnt);
-                // $page_start = ($page - 1) * $list;
-                $stmt;
-                $stmt = $conn -> query("SELECT *
-                                            FROM(
-                                                SELECT E.*, ROWNUM AS ROW_NUM 
-                                                FROM EBOOK E
-                                                WHERE LOWER(TITLE) LIKE '%' || '$searchWord' || '%'
-                                                ORDER BY ROW_NUM
-                                                )
-                                        WHERE ROW_NUM >= $block_start AND ROW_NUM <= $block_end");
+                //검색 결과와 합쳐진 최종 쿼리
+                $stmt = $conn -> query($sql);
                 $stmt -> execute();
+                //쿼리 수행 결과로 나온 행들을 돌며 테이블에 값 뿌리기
                 while ($row = $stmt->fetch(PDO::FETCH_ASSOC)) {
             ?>
                     <tr>
                         <td><?=$row["ROW_NUM"]?></td>
                         <td><?=$row["ISBN"] ?></td>
-                        <td><a href="bookView.php?isbn=<?=$row["ISBN"]?>"><?=$row["TITLE"] ?></a></td>
+                        <!-- 도서 별 상세 페이지(예약 및 대여 페이지)인 bookView로 가는 링크 -->
+                        <td><a class="bookViewLink" href="bookView.php?isbn=<?=$row["ISBN"]?>"><?=$row["TITLE"] ?></a></td>
                         <td>
                             <?php 
+                                //AUTHORS Table에서 현재 도서의 ISBN값과 같은 행들을 돌며 저자 출력 
                                 $query = "SELECT * FROM AUTHORS WHERE {$row['ISBN']} = ISBN";
                                 $author = $orcl->select($query);
                                 foreach ($author as $idx => $value) {
@@ -102,6 +235,7 @@
                         <td><?=$row["YEAR"] ?></td>
                         <td>
                             <?php 
+                                //CNO값으로 대출 상태를 출력
                                 if ($row["CNO"] !== NULL) {
                                     echo("대출 중");
                                 }
@@ -112,64 +246,6 @@
                     <?php } ?>  
                     </tbody>
             </table>      
-
-            <div id="paging" class="center">
-                <?php 
-                    // echo $page;
-                    if($page <= 1) {}
-                    else {
-                        if ($searchWord == "") {
-                            echo "<a href='search.php?page=1'>처음</a>";
-                        }
-                        else{
-                            echo "<a href='search.php?searchWord=$searchWord?page=1'>처음</a>";
-                        }
-                    }
-                    if($page <= 1) {}
-                    else {
-                        $previous = (int)$page - 1;
-                        if ($searchWord == "") {
-                            echo "<a href='search.php?page=$previous'>이전</a>";
-                        }
-                        else{
-                            echo "<a href='search.php?searchWord=$searchWord?page=$previous'>이전</a>";
-                        }
-                    }
-                    for ($idx=1; $idx <= $total_page ; $idx++) { 
-                        if($page == $idx){
-                            echo "<b> $idx </b>";
-                        }
-                        else {
-                            if ($searchWord == "") {
-                                echo "<a href='search.php?page=$idx'> $idx </a>";
-                            }
-                            else{
-                                echo "<a href='search.php?searchWord=$searchWord?page=$idx'> $idx </a>";
-                            }
-                        }
-                    }
-                    if($page >= $total_page) {}
-                    else{
-                        $next = (int)$page + 1;
-                        if ($searchWord == "") {
-                            echo "<a href='search.php?page=$next'>다음</a>";
-                        }
-                        else{
-                            echo "<a href='search.php?searchWord=$searchWord?page=$next'>다음</a>";
-                        }
-                    }
-                    if($page >= $total_page) {}
-                    else{
-                        if ($searchWord == "") {
-                            echo "<a href='search.php?page=$total_page'>끝</a>";
-                        }
-                        else{
-                            echo "<a href='search.php?searchWord=$searchWord?page=$total_page'>끝</a>";
-                        }
-                    }
-                ?>
-            </div>
-
         </article>
 </section>
 </div>

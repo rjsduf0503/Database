@@ -1,0 +1,19 @@
+table.adminTable{
+    width: 100%;
+    margin-top: 10px;
+    margin-bottom: 40px;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table.adminTable th, table.adminTable td{
+    border: 1px solid black;
+    padding: 10px;
+}
+
+table.adminTable th{
+    border-top: 4px solid rgb(97, 97, 97);
+    font-weight: bold;
+    background-color: rgb(199, 196, 196);
+}
+

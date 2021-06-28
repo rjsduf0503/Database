@@ -1,3 +1,4 @@
+<!-- 하단의 footer, script를 여기서 전부 가져옴 -->
 <footer>
         <div class="wrap">
         <div class="footer_main">
@@ -9,5 +10,9 @@
     </footer>
 <script src="../login/login.js"></script>
 <script src="../login/logout.js"></script>
+<script src="../book/bookView.js"></script>
+<script src="../myPage/myPage.js"></script>
+<script src="../base.js"></script>
+
 </body>
 </html>

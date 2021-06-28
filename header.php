@@ -1,8 +1,9 @@
+<!-- 상단의 header, home link와 Logout 기능이 구현되어 있음 -->
 <?php 
     session_start(); 
     include 'OracleDB.php';
-    $orcl = new OracleDB('127.0.0.1', 'TP201702043', 'Chess00700');
-    $orcl->connect();
+    $orcl = new OracleDB('127.0.0.1', 'TP201702043', 'password');
+    $conn = $orcl->connect();
 ?>
 
 <!DOCTYPE html>
@@ -10,13 +11,8 @@
     <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-
-        
-    <title>Library</title>
-    <link rel="stylesheet" href="../book/search.css">
-    <link rel="stylesheet" href="../base.css"> 
-    <!-- <link rel="stylesheet" href="../main/main.css"> -->
-    <!-- <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.0/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-wEmeIV1mKuiNpC+IOBjI7aAzPcEZeedi5yW5f2yOq55WWLwNGmvvx4Um1vskeMj0" crossorigin="anonymous"> -->
+    <title>Online-Library</title>
+    <link rel="stylesheet" href="../base.css?after"> 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
 </head>
 <body>
@@ -25,19 +21,16 @@
             <div class="wrap">
                 <div id="home_logo">
                     <a id="home_link" href="../main/main.php">Library</a>
-                    <small>Online Library</small>
+                    <small>Online-Library</small>
                 </div>
                 <div class="logout_div">
                         <ul>
+                            <!-- SESSION 값이 있을 때만(로그인한 경우에만) LOGOUT link를 표시 -->
                             <?php if(isset($_SESSION["CNO"])) : ?>
                                 <li><a class="show logout_link" href="../login/login.php" name="logoutLink" id="logoutLink">LOGOUT</a></li>
                                 <li><?php echo($_SESSION["NAME"]) ?>님 환영합니다.</li>
-                            <?php else :
-                                    // header("location:../login/login.php");
-                                 ?>
+                            <?php else : ?>
                                  <li><a class="hide logout_link" href="../login/login.php" name="logoutLink" id="logoutLink">LOGOUT</a></li>
-                                <!-- <li><a class="show" href="../login/login.php" name="loginLink" id="loginLink">LOGIN</a></li> -->
-                                <!-- <li><a class="hide" href="../main/main.php" name="logoutLink" id="logoutLink">LOGOUT</a></li> -->
                             <?php endif; ?>
                         </ul>
                 </div>

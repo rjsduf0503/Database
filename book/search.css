@@ -1,8 +1,9 @@
 table.bookList{
-    width: 80%;
+    width: 100%;
     border: 1px solid black;
     border-collapse: collapse;
 }
+
 table.bookList th, table.bookList td{
     border: 1px solid black;
     padding: 10px;
@@ -14,36 +15,53 @@ table.bookList th{
     background-color: rgb(199, 196, 196);
 }
 
+a{
+    text-decoration: none;
+}
 
+a.bookViewLink:link, a.bookViewLink:visited{
+    color: blue;
+}
 
-label[for="searchWord"]{
-    /* font-size: 100px; */
-    display: none;
-    /* visibility:hidden; */
+.page_num:link, .page_num:visited{
+    color: black;
 }
 
 .margin_div{
-    margin: 10px 10px 10px 0;
-    /* margin: 0px auto; */
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
 }
 
-#searchWord{
-    /* text-align: center; */
-    width: 70%;
-    float: left;
-    /* margin: 10px 5px 10px 0; */
+.margin_div > div{
+    margin-top: 20px;
+}
+
+.margin_div > label{
     margin-right: 10px;
+}
+
+.margin_div > select{
+    margin-left: 10px;
+    margin-right: 20px;
+}
+
+form input{
     padding: 5px 0 5px 0;
     background-color: rgb(255, 255, 255);
     border: 5px solid rgb(58, 206, 13);
     font-size: 15px;
 }
 
+form select{
+    margin-right: 10px;
+}
+
 article h1{
     margin-top: 20px;
 }
 
-button.search_btn_img{
+.search_btn_img{
     margin-top: 5px;
     background: url("button_search.png") no-repeat;
     border: none;

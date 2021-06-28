@@ -1,4 +1,5 @@
-$(document).ready(function() { //로그아웃
+//로그아웃
+$(document).ready(function() { 
     $("#logoutLink").on("click", function() {
         $.ajax({ //ajax로 서버와 통신
           type: "POST", //POST 방식으로 통신

@@ -1,0 +1,38 @@
+.book_description{
+    padding: 20px;
+    width: 100%;
+    border: 1px solid black;
+}
+
+.button_div button{
+    padding: 8px;
+    margin-top: 10px;
+    border-top-right-radius: 5px; 
+    border-bottom-right-radius: 5px;
+}
+
+#rental_btn{
+    margin-right: 5px;
+}
+
+table.bookInfo{
+    width: 100%;
+    border: 1px solid black;
+    border-collapse: collapse;
+}
+
+table.bookInfo th, table.bookInfo td{
+    border: 1px solid black;
+    padding: 10px;
+}
+
+table.bookInfo th{
+    border-top: 4px solid rgb(97, 97, 97);
+    font-weight: bold;
+    background-color: rgb(199, 196, 196);
+}
+
+article h1{
+    margin-top: 20px;
+}
+
